@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ZealEducation.Models.Faculty;
+using ZealEducation.Models.ExamModule;
+using ZealEducation.Models.Users;
 
 namespace ZealEducation.Models
 {
@@ -10,6 +11,9 @@ namespace ZealEducation.Models
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
+
+        public DbSet<Exam> Exams { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

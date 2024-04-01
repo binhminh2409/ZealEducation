@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZealEducation.Models;
 
@@ -11,9 +12,10 @@ using ZealEducation.Models;
 namespace ZealEducation.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240401055648_FullDBMigration2")]
+    partial class FullDBMigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,21 +53,21 @@ namespace ZealEducation.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "202a7863-4c0b-45c0-b26f-4695e19c8e80",
+                            Id = "0b6f83fd-9324-49e6-b6cd-4bb0297c264e",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "824e345b-20c5-48ba-85ad-5842c4514817",
+                            Id = "1d6d5f02-f132-425d-8a43-4657d856b795",
                             ConcurrencyStamp = "2",
                             Name = "Faculty",
                             NormalizedName = "Faculty"
                         },
                         new
                         {
-                            Id = "365e6360-5b1a-49a6-96ee-576bab66b1a5",
+                            Id = "1c4128a7-d9e1-4eff-ba22-789872406cca",
                             ConcurrencyStamp = "3",
                             Name = "Candidate",
                             NormalizedName = "Candidate"
@@ -217,9 +219,9 @@ namespace ZealEducation.Migrations
                         .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Quantity")
+                    b.Property<string>("Quantity")
                         .IsRequired()
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("StartDate")
                         .IsRequired()

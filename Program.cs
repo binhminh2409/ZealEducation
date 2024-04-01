@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ZealEducation.Models;
 using Microsoft.OpenApi.Models;
-using ZealEducation.Models.Faculty;
+using ZealEducation.Models.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 

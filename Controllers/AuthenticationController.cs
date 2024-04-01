@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using ZealEducation.Models.Faculty;
+using ZealEducation.Models.Users;
 
 namespace ZealEducation.Controllers
 {
