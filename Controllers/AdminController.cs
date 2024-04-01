@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ZealEducation.Models.Faculty;
+using ZealEducation.Models.Users;
 
 namespace ZealEducation.Controllers
 {
