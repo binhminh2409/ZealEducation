@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ZealEducation.Models.BatchModule;
+using ZealEducation.Models.CandidateModule;
+using ZealEducation.Models.CourseModule;
 using ZealEducation.Models.ExamModule;
 using ZealEducation.Models.Users;
 
@@ -12,13 +15,23 @@ namespace ZealEducation.Models
         {
         }
 
-        public DbSet<Exam> Exams { get; set; }
+        public DbSet<Exam> Exam { get; set; }
+
+        public DbSet<Batch> Batch { get; set; }
+
+        public DbSet<Course> Course { get; set; }
+
+        public DbSet<CourseSession> CourseSession { get; set; }
+
+        public DbSet<Resource> Resource { get; set; }
+
+        public DbSet<Enrollment> Enrollment { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            SeedRoles(builder);
+            // SeedRoles(builder);
         }
 
         private void SeedRoles(ModelBuilder builder)

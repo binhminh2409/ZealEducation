@@ -11,7 +11,7 @@ using ZealEducation.Models.Users;
 
 namespace ZealEducation.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/authentication")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -33,11 +33,17 @@ namespace ZealEducation.Controllers
         public async Task<IActionResult> RegisterCandidate([FromBody] RegisterUser registerUser)
         {
             //Check User existence
-            var userExist=await _userManager.FindByEmailAsync(registerUser.Email);
-            if (userExist != null)
+            var userExistByEmail = await _userManager.FindByEmailAsync(registerUser.Email);
+            var userExistByUsername = await _userManager.FindByNameAsync(registerUser.Username);
+            if (userExistByEmail != null)
             {
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new Response { Status = "Error", Message = "User already exists!" });
+            }
+            else if (userExistByUsername != null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden,
+                       new Response { Status = "Error", Message = "Username already taken!" });
             }
 
             //Add the User in the Database
@@ -65,7 +71,7 @@ namespace ZealEducation.Controllers
             await _userManager.AddToRoleAsync(user, role);
 
             return StatusCode(StatusCodes.Status201Created,
-                   new Response { Status = "Error", Message = "Candidate user created successfully" });
+                   new Response { Status = "OK", Message = "Candidate user created successfully" });
 
         }
 
@@ -74,11 +80,16 @@ namespace ZealEducation.Controllers
         public async Task<IActionResult> RegisterFaculty([FromBody] RegisterUser registerUser)
         {
             //Check User existence
-            var userExist = await _userManager.FindByEmailAsync(registerUser.Email);
-            if (userExist != null)
+            var userExistByEmail = await _userManager.FindByEmailAsync(registerUser.Email);
+            var userExistByUsername = await _userManager.FindByNameAsync(registerUser.Username);
+            if (userExistByEmail != null)
             {
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new Response { Status = "Error", Message = "User already exists!" });
+            }
+            else if (userExistByUsername != null) {
+                return StatusCode(StatusCodes.Status403Forbidden,
+                       new Response { Status = "Error", Message = "Username already taken!" });
             }
 
             //Add the User in the Database
@@ -105,7 +116,7 @@ namespace ZealEducation.Controllers
             //Automatically assign Candidate role
             await _userManager.AddToRoleAsync(user, role);
             return StatusCode(StatusCodes.Status201Created,
-                   new Response { Status = "Error", Message = "Faculty user created successfully" });
+                   new Response { Status = "OK", Message = "Faculty user created successfully" });
 
         }
 
@@ -123,7 +134,7 @@ namespace ZealEducation.Controllers
                 //create claimlist 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 

@@ -7,7 +7,7 @@ using ZealEducation.Models.Users;
 namespace ZealEducation.Controllers
 {
     [Authorize(Roles = "Faculty,Admin")]
-    [Route("api/[controller]")]
+    [Route("api/admin")]
     [ApiController]
     public class AdminController : ControllerBase
     {
