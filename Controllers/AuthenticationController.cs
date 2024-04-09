@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ZealEducation.Models.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace ZealEducation.Controllers
 {
@@ -18,14 +19,18 @@ namespace ZealEducation.Controllers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly ApplicationDbContext _dbContext;
 
         public AuthenticationController(UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _dbContext = dbContext;
+
         }
 
         [HttpPost]
@@ -52,10 +57,6 @@ namespace ZealEducation.Controllers
                 Email = registerUser.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerUser.Username,
-                FirstName = registerUser.FirstName,
-                LastName = registerUser.LastName,
-                PhoneNumber = registerUser.PhoneNumber,
-                DateOfBirth = registerUser.DateOfBirth,
             };
 
             var role = "Candidate";
@@ -67,8 +68,23 @@ namespace ZealEducation.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new Response { Status = "Error", Message = "Candidate user failed to create" });
             }
+
             //Automatically assign Candidate role
             await _userManager.AddToRoleAsync(user, role);
+
+            //Create user info and add to DB
+            UserInfo userInfo = new()
+            {
+                User = await _userManager.FindByEmailAsync(registerUser.Email),
+                Email = registerUser.Email,
+                FirstName = registerUser.FirstName,
+                LastName = registerUser.LastName,
+                PhoneNumber = registerUser.PhoneNumber,
+                DateOfBirth = registerUser.DateOfBirth,
+            };
+
+            await _dbContext.UserInfo.AddAsync(userInfo);
+            await _dbContext.SaveChangesAsync();
 
             return StatusCode(StatusCodes.Status201Created,
                    new Response { Status = "OK", Message = "Candidate user created successfully" });
@@ -98,10 +114,6 @@ namespace ZealEducation.Controllers
                 Email = registerUser.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerUser.Username,
-                FirstName = registerUser.FirstName,
-                LastName = registerUser.LastName,
-                PhoneNumber = registerUser.PhoneNumber,
-                DateOfBirth = registerUser.DateOfBirth,
             };
 
             var role = "Faculty";
@@ -115,6 +127,21 @@ namespace ZealEducation.Controllers
             }
             //Automatically assign Candidate role
             await _userManager.AddToRoleAsync(user, role);
+
+            //Create user info and add to DB
+            UserInfo userInfo = new()
+            {
+                User = await _userManager.FindByEmailAsync(registerUser.Email),
+                Email = registerUser.Email,
+                FirstName = registerUser.FirstName,
+                LastName = registerUser.LastName,
+                PhoneNumber = registerUser.PhoneNumber,
+                DateOfBirth = registerUser.DateOfBirth,
+            };
+
+            _dbContext.UserInfo.Add(userInfo);
+            _dbContext.SaveChanges();
+
             return StatusCode(StatusCodes.Status201Created,
                    new Response { Status = "OK", Message = "Faculty user created successfully" });
 

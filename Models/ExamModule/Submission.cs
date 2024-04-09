@@ -10,7 +10,7 @@ namespace ZealEducation.Models.ExamModule
         public string Id { get; set; }
 
         [Required(ErrorMessage = "Please select a user")]
-        public User? User { get; set; }
+        public UserInfo? UserInfo { get; set; }
 
         [Required(ErrorMessage = "Please assign an exam")]
         public Exam? Exam { get; set; }

@@ -12,7 +12,7 @@ namespace ZealEducation.Models.CandidateModule
         public Course? Course { get; set; }
 
         [Required(ErrorMessage = "Please assign an user id")]
-        public User? User { get; set; }
+        public UserInfo? UserInfo { get; set; }
 
         [Required(ErrorMessage = "Please assign a created date")]
         public DateTime? CreatedDate { get; set; }
