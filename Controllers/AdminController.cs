@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ZealEducation.Models;
 using ZealEducation.Models.Users;
 
 namespace ZealEducation.Controllers
@@ -13,12 +14,16 @@ namespace ZealEducation.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _dbContext;
+
 
         public AdminController(UserManager<User> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ApplicationDbContext dbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _dbContext = dbContext;
         }
 
         [HttpGet("users")]
@@ -29,17 +34,14 @@ namespace ZealEducation.Controllers
                 var users = await _userManager.Users.ToListAsync();
 
                 // Map to UserLists model (optional)
-                var userList = new UserLists();
+                var userList = new UserList();
                 foreach (var u in users)
                 {
                     var roles = await _userManager.GetRolesAsync(u);
-                    userList.Users.Add(new UserLists.User
+                    userList.Users.Add(new UserList.User
                     {
                         Username = u.UserName,
                         Email = u.Email,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        PhoneNumber = u.PhoneNumber,
                         Roles = roles.ToList()
                     });
                 }
@@ -53,30 +55,14 @@ namespace ZealEducation.Controllers
             }
         }
 
-        [HttpGet("candidates")]
+        [HttpGet("user-info")]
         public async Task<IActionResult> GetCandidates()
         {
             try
             {
-                var users = await _userManager.GetUsersInRoleAsync("Candidate");
+                var userInfo = _dbContext.UserInfo.ToList();
 
-                // Map to UserLists model (optional)
-                var userList = new UserLists();
-                foreach (var u in users)
-                {
-                    var roles = await _userManager.GetRolesAsync(u);
-                    userList.Users.Add(new UserLists.User
-                    {
-                        Username = u.UserName,
-                        Email = u.Email,
-                        FirstName = u.FirstName,
-                        LastName = u.LastName,
-                        PhoneNumber = u.PhoneNumber,
-                        Roles = roles.ToList()
-                    });
-                }
-
-                return Ok(userList);
+                return Ok(userInfo);
             }
             catch (Exception ex)
             {

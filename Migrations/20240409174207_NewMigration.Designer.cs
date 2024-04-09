@@ -12,8 +12,8 @@ using ZealEducation.Models;
 namespace ZealEducation.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240401050932_FullDBMigration")]
-    partial class FullDBMigration
+    [Migration("20240409174207_NewMigration")]
+    partial class NewMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -49,29 +49,6 @@ namespace ZealEducation.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "812ac64e-5b2a-4324-8caf-7cf6dbd4ba8e",
-                            ConcurrencyStamp = "1",
-                            Name = "Admin",
-                            NormalizedName = "Admin"
-                        },
-                        new
-                        {
-                            Id = "88e6e601-94a1-4959-aa36-e242b48e5d81",
-                            ConcurrencyStamp = "2",
-                            Name = "Faculty",
-                            NormalizedName = "Faculty"
-                        },
-                        new
-                        {
-                            Id = "5218717a-bee4-4af5-8abb-9568cb4b77f4",
-                            ConcurrencyStamp = "3",
-                            Name = "Candidate",
-                            NormalizedName = "Candidate"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -187,21 +164,79 @@ namespace ZealEducation.Migrations
 
                     b.Property<string>("BatchSessionId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("Date")
                         .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserInfoId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("BatchSessionId");
+
+                    b.HasIndex("UserInfoId");
 
                     b.ToTable("Attendance");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.BatchModule.Batch", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CourseId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Quantity")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartDate")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("TotalSessions")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Batch");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.BatchModule.BatchSession", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BatchId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatchId");
+
+                    b.ToTable("BatchSession");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CandidateModule.Enrollment", b =>
@@ -211,7 +246,7 @@ namespace ZealEducation.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("CreatedDate")
                         .IsRequired()
@@ -221,15 +256,123 @@ namespace ZealEducation.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserInfoId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("UserInfoId");
 
                     b.ToTable("Enrollment");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.CourseModule.Course", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Price")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TotalSessions")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Course");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.CourseModule.CourseSession", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CourseId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("CourseSession");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.CourseModule.Resource", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CourseSessionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseSessionId");
+
+                    b.ToTable("Resource");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.ExamModule.Exam", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BatchId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatchId");
+
+                    b.ToTable("Exams");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Result", b =>
@@ -267,24 +410,26 @@ namespace ZealEducation.Migrations
 
                     b.Property<string>("ExamId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserInfoId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ExamId");
+
+                    b.HasIndex("UserInfoId");
 
                     b.ToTable("Submission");
                 });
 
-            modelBuilder.Entity("ZealEducation.Models.Faculty.User", b =>
+            modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -296,24 +441,12 @@ namespace ZealEducation.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DateOfBirth")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -361,6 +494,34 @@ namespace ZealEducation.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("ZealEducation.Models.Users.UserInfo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("DateOfBirth")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserInfo");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -372,7 +533,7 @@ namespace ZealEducation.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("ZealEducation.Models.Faculty.User", null)
+                    b.HasOne("ZealEducation.Models.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -381,7 +542,7 @@ namespace ZealEducation.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ZealEducation.Models.Faculty.User", null)
+                    b.HasOne("ZealEducation.Models.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,7 +557,7 @@ namespace ZealEducation.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ZealEducation.Models.Faculty.User", null)
+                    b.HasOne("ZealEducation.Models.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -405,7 +566,7 @@ namespace ZealEducation.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("ZealEducation.Models.Faculty.User", null)
+                    b.HasOne("ZealEducation.Models.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -414,38 +575,165 @@ namespace ZealEducation.Migrations
 
             modelBuilder.Entity("ZealEducation.Models.BatchModule.Attendance", b =>
                 {
-                    b.HasOne("ZealEducation.Models.Faculty.User", null)
+                    b.HasOne("ZealEducation.Models.BatchModule.BatchSession", "BatchSession")
                         .WithMany("Attendances")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("BatchSessionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ZealEducation.Models.Users.UserInfo", "UserInfo")
+                        .WithMany("Attendances")
+                        .HasForeignKey("UserInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BatchSession");
+
+                    b.Navigation("UserInfo");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.BatchModule.Batch", b =>
+                {
+                    b.HasOne("ZealEducation.Models.CourseModule.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.BatchModule.BatchSession", b =>
+                {
+                    b.HasOne("ZealEducation.Models.BatchModule.Batch", "Batch")
+                        .WithMany("BatchSessions")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Batch");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CandidateModule.Enrollment", b =>
                 {
-                    b.HasOne("ZealEducation.Models.Faculty.User", null)
+                    b.HasOne("ZealEducation.Models.CourseModule.Course", "Course")
                         .WithMany("Enrollments")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ZealEducation.Models.Users.UserInfo", "UserInfo")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("UserInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("UserInfo");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.CourseModule.CourseSession", b =>
+                {
+                    b.HasOne("ZealEducation.Models.CourseModule.Course", "Course")
+                        .WithMany("Sessions")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.CourseModule.Resource", b =>
+                {
+                    b.HasOne("ZealEducation.Models.CourseModule.CourseSession", "CourseSession")
+                        .WithMany("Resources")
+                        .HasForeignKey("CourseSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseSession");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.ExamModule.Exam", b =>
+                {
+                    b.HasOne("ZealEducation.Models.BatchModule.Batch", "Batch")
+                        .WithMany("Exams")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Batch");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Result", b =>
                 {
-                    b.HasOne("ZealEducation.Models.ExamModule.Submission", null)
+                    b.HasOne("ZealEducation.Models.ExamModule.Submission", "Submission")
                         .WithMany("Results")
                         .HasForeignKey("SubmissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Submission");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Submission", b =>
                 {
-                    b.HasOne("ZealEducation.Models.Faculty.User", null)
+                    b.HasOne("ZealEducation.Models.ExamModule.Exam", "Exam")
                         .WithMany("Submissions")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("ExamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ZealEducation.Models.Users.UserInfo", "UserInfo")
+                        .WithMany("Submissions")
+                        .HasForeignKey("UserInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
+
+                    b.Navigation("UserInfo");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.Users.UserInfo", b =>
+                {
+                    b.HasOne("ZealEducation.Models.Users.User", "User")
+                        .WithOne("UserInfo")
+                        .HasForeignKey("ZealEducation.Models.Users.UserInfo", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.BatchModule.Batch", b =>
+                {
+                    b.Navigation("BatchSessions");
+
+                    b.Navigation("Exams");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.BatchModule.BatchSession", b =>
+                {
+                    b.Navigation("Attendances");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.CourseModule.Course", b =>
+                {
+                    b.Navigation("Enrollments");
+
+                    b.Navigation("Sessions");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.CourseModule.CourseSession", b =>
+                {
+                    b.Navigation("Resources");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.ExamModule.Exam", b =>
+                {
+                    b.Navigation("Submissions");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Submission", b =>
@@ -453,7 +741,12 @@ namespace ZealEducation.Migrations
                     b.Navigation("Results");
                 });
 
-            modelBuilder.Entity("ZealEducation.Models.Faculty.User", b =>
+            modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
+                {
+                    b.Navigation("UserInfo");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.Users.UserInfo", b =>
                 {
                     b.Navigation("Attendances");
 

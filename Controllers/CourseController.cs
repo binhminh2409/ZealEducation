@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using ZealEducation.Models;
 using ZealEducation.Models.CourseModule;
-using ZealEducation.Models.Users;
 using ZealEducation.Utils;
 
 namespace ZealEducation.Controllers
 {
-    [Route("api/course/public")]
+    [Route("api/course")]
     [ApiController]
     public class CourseController : ControllerBase
     {
@@ -21,7 +18,6 @@ namespace ZealEducation.Controllers
             _dbContext = dbContext;
 
         }
-
 
         [HttpGet]
         [Route("all")]
@@ -42,12 +38,25 @@ namespace ZealEducation.Controllers
 
         [HttpGet]
         [Route("find/{id}")]
-        public async Task<IActionResult> GetCourse([FromRoute] string id)
+        public async Task<IActionResult> GetCourse([FromRoute] string id,
+            [FromQuery] bool returnSessions)
         {
             //load all Courses with Sessions descriptions
-            var course = await _dbContext.Course
+            var course = new Course();
+
+            if (returnSessions)
+            {
+                // Load the course with sessions and resources
+                course = await _dbContext.Course
+                    .Include(c => c.Sessions)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+            } else
+            {
+                course = await _dbContext.Course
                 .Include(c => c.Sessions)
                 .FirstOrDefaultAsync(c => c.Id == id);
+            }
 
             if (course == null)
             {
@@ -56,6 +65,24 @@ namespace ZealEducation.Controllers
 
             return Ok(course);
         }
+
+
+        [HttpGet]
+        [Route("find/{id}/session/{sessionNumber}")]
+        public async Task<IActionResult> GetSession([FromRoute] string id, int sessionNumber)
+        {
+            //load Session with session number
+            var session = await _dbContext.CourseSession
+                .FirstOrDefaultAsync(s => s.Id == IdCreator.ConcatenateId(id, sessionNumber));
+
+            if (session == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(session);
+        }
+
 
         [Authorize(Roles = "Admin,Faculty")]
         [HttpPost]
@@ -80,15 +107,16 @@ namespace ZealEducation.Controllers
 
             //create Sessions and Resources
             var newSessionsList = courseDTO.Sessions.ToList();
-            List<CourseSession> courseSessions = new() { };
+            List<CourseSession> courseSessions = new();
             List<Resource> resources = new();
 
             for (int i = 0; i < newSessionsList.Count; i++)
             {
+                Console.WriteLine("Adding session" + i);
                 var newSessionDto = newSessionsList[i];
                 CourseSession session = new()
                 {
-                    Id = IdCreator.ConcatenateId(course.Id, i + 1),
+                    Id = IdCreator.ConcatenateId(course.Id, i+1),
                     Course = course,
                     Name = newSessionDto.Name,
                     Description = newSessionDto.Description,
@@ -103,7 +131,7 @@ namespace ZealEducation.Controllers
                         var resourceDto = newRessourceDtoList[j];
                         resources.Add(new Resource
                         {
-                            Id = IdCreator.ConcatenateId(session.Id, j + 1),
+                            Id = IdCreator.ConcatenateId(session.Id, j+1),
                             Name = resourceDto.Name,
                             FilePath = resourceDto.FilePath,
                             Type = resourceDto.Type,
@@ -114,13 +142,12 @@ namespace ZealEducation.Controllers
                 courseSessions.Add(session);
             }
             //Add Sessions to DB
-            _dbContext.CourseSession.AddRange(courseSessions);
+            await _dbContext.CourseSession.AddRangeAsync(courseSessions);
             //Add resources to DB
-            _dbContext.Resource.AddRange(resources);
+            await _dbContext.Resource.AddRangeAsync(resources);
             //Save to DB
             await _dbContext.SaveChangesAsync();
-            return StatusCode(StatusCodes.Status201Created,
-                new Response() { Status = "Created", Message = $"New course with Id {course.Id} have been created" });
+            return Created("Course created successfully", course);
 
         }
 
@@ -164,38 +191,14 @@ namespace ZealEducation.Controllers
             return Ok($"Course with Id {id} updated successfully"); 
         }
 
-        [HttpGet]
-        [Route("{id}/session/{sessionNumber}")]
-        public async Task<IActionResult> GetSession([FromRoute] string id, int sessionNumber)
-        {
-            //load Session with session number
-            var session = await _dbContext.CourseSession
-                .FirstOrDefaultAsync(s => s.Id == IdCreator.ConcatenateId(id, sessionNumber));
+        //[HttpPut]
+        //[Route("{id}/session/{number}/resource/create")]
+        //public async Task<IActionResult> AddSessionResources([FromRoute] string id, [FromRoute] int number, [FromBody] ResourceDTO resourceDTO)
+        //{
+        //    var course = await _dbContext.Course.FindAsync(id);
 
-            if (session == null)
-            {
-                return NotFound();
-            }
 
-            return Ok(session);
-        }
+        //}
 
-        [HttpGet]
-        [Route("{id}/session/all")]
-        public async Task<IActionResult> GetAllSessions([FromRoute] string id)
-        {
-            
-            // Load the course with sessions and resources
-            var course = await _dbContext.Course
-                .Include(c => c.Sessions)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (course == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(course);
-        }
     }
 }
