@@ -14,6 +14,7 @@ namespace ZealEducation.Models.CandidateModule
         public Course? Course { get; set; }
 
         [Required(ErrorMessage = "Please assign an user id"), JsonIgnore]
+
         public UserInfo? UserInfo { get; set; }
 
         [Required(ErrorMessage = "Please assign a created date")]

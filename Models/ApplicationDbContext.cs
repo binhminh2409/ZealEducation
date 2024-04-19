@@ -22,6 +22,7 @@ namespace ZealEducation.Models
 
         public DbSet<Submission> Submission { get; set; }
 
+
         public DbSet<Batch> Batch { get; set; }
 
         public DbSet<BatchSession> BatchSession { get; set; }

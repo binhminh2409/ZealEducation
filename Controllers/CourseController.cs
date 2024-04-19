@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ZealEducation.Models;
 using ZealEducation.Models.CourseModule;
 using ZealEducation.Models.ExamModule;
+
 using ZealEducation.Utils;
 
 namespace ZealEducation.Controllers
@@ -267,5 +268,6 @@ namespace ZealEducation.Controllers
             if (!courses.Any()) { return NotFound(); }
             return Ok(courses);
         }
+
     }
 }

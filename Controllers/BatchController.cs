@@ -216,7 +216,6 @@ namespace ZealEducation.Controllers
         {
             // Check if user enrolled to the course
 
-
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
             if (user == null) { return NotFound("Candidate user doesn't exist"); }
             var userInfo = await _dbContext.UserInfo.FirstOrDefaultAsync(ui => ui.User == user);

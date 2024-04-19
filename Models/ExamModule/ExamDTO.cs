@@ -21,5 +21,6 @@ namespace ZealEducation.Models.ExamModule
 
         [Required(ErrorMessage = "Please provide exam passing score")]
         public int? ScoreToPass { get; set; }
+
     }
 }
