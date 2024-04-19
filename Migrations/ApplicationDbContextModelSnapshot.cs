@@ -52,6 +52,7 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "f987cfbd-bf91-4239-a07c-1aa7d236d4a3",
+
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
@@ -59,6 +60,7 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "6cd095fe-c6bc-4bc7-b9b6-9c6d69782193",
+
                             ConcurrencyStamp = "2",
                             Name = "Faculty",
                             NormalizedName = "Faculty"
@@ -66,6 +68,7 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "1a0b4186-afc9-4517-93e5-610a6e98a483",
+
                             ConcurrencyStamp = "3",
                             Name = "Candidate",
                             NormalizedName = "Candidate"
