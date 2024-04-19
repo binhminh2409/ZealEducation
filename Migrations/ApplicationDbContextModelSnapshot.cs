@@ -208,7 +208,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Attendance");
+                    b.ToTable("Attendance", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.BatchModule.Batch", b =>
@@ -240,7 +240,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Batch");
+                    b.ToTable("Batch", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.BatchModule.BatchSession", b =>
@@ -260,7 +260,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("BatchId");
 
-                    b.ToTable("BatchSession");
+                    b.ToTable("BatchSession", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CandidateModule.Enrollment", b =>
@@ -297,7 +297,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Enrollment");
+                    b.ToTable("Enrollment", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.Course", b =>
@@ -326,7 +326,7 @@ namespace ZealEducation.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Course");
+                    b.ToTable("Course", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.CourseSession", b =>
@@ -350,7 +350,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("CourseSession");
+                    b.ToTable("CourseSession", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.Resource", b =>
@@ -378,7 +378,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseSessionId");
 
-                    b.ToTable("Resource");
+                    b.ToTable("Resource", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Exam", b =>
@@ -413,7 +413,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("BatchId");
 
-                    b.ToTable("Exams");
+                    b.ToTable("Exams", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Submission", b =>
@@ -452,7 +452,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Submission");
+                    b.ToTable("Submission", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
@@ -545,7 +545,7 @@ namespace ZealEducation.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserInfo");
+                    b.ToTable("UserInfo", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -752,11 +752,6 @@ namespace ZealEducation.Migrations
                 });
 
             modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
-                {
-                    b.Navigation("UserInfo");
-                });
-
-            modelBuilder.Entity("ZealEducation.Models.Users.UserInfo", b =>
                 {
                     b.Navigation("UserInfo");
                 });
