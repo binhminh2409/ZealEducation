@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ZealEducation.Models;
 using ZealEducation.Models.CourseModule;
+using ZealEducation.Models.ExamModule;
+
 using ZealEducation.Utils;
 
 namespace ZealEducation.Controllers
@@ -13,10 +15,14 @@ namespace ZealEducation.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public CourseController(ApplicationDbContext dbContext)
+        private readonly IWebHostEnvironment _env;
+
+        private string[] ImageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+
+        public CourseController(ApplicationDbContext dbContext, IWebHostEnvironment env)
         {
             _dbContext = dbContext;
-
+            _env = env;
         }
 
         [HttpGet]
@@ -94,6 +100,7 @@ namespace ZealEducation.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest,
                                new Response { Status = "Error", Message = "Please create at least 1 session" });
             }
+
             //create course
             Course course = new()
             {
@@ -169,6 +176,8 @@ namespace ZealEducation.Controllers
                    new Response { Status = "OK", Message = $"The course with Id {id} have been deleted successfully" });
         }
 
+
+
         [Authorize(Roles = "Admin,Faculty")]
         [HttpPut]
         [Route("update/{id}")]
@@ -191,14 +200,74 @@ namespace ZealEducation.Controllers
             return Ok($"Course with Id {id} updated successfully"); 
         }
 
-        //[HttpPut]
-        //[Route("{id}/session/{number}/resource/create")]
-        //public async Task<IActionResult> AddSessionResources([FromRoute] string id, [FromRoute] int number, [FromBody] ResourceDTO resourceDTO)
-        //{
-        //    var course = await _dbContext.Course.FindAsync(id);
+        [HttpPut("update/{id}/image")]
+        public async Task<IActionResult> UpdateCourseImage(IFormFile imageFile, [FromRoute] string id)
+        {
+
+            // Check file validity
+            if (imageFile == null || imageFile.Length <= 0) { return BadRequest("No file submitted"); }
+
+            // Create unique file name 
+            string imageFileExtension = Path.GetExtension(imageFile.FileName).ToLower();
+
+            // Check if the file extension is in the list of image extensions
+            if (Array.IndexOf(ImageExtensions, imageFileExtension) == -1)
+            {
+                return BadRequest("The submitted file is not an image");
+            }
+
+            var course = await _dbContext.Course.FindAsync(id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            // Store file in the server
+            var folderPath = Path.Combine(_env.ContentRootPath, "Files", "CourseImages");
+            Directory.CreateDirectory(folderPath); // Create the folder if it doesn't exist
+            var imageName = course.Id + imageFileExtension;
+            var imagePath = Path.Combine(folderPath, imageName);
 
 
-        //}
+            using (var stream = new FileStream(imagePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+            course.ImageName = imageName;
+
+            await _dbContext.SaveChangesAsync();
+            return Ok($"Course with Id {id} updated successfully");
+        }
+
+        [HttpPost]
+        [Route("{id}/session/{number}/resource/create")]
+        public async Task<IActionResult> CreateSession([FromRoute] string id, [FromRoute] int number, [FromBody] ResourceDTO resourceDTO)
+        {
+            var session = await _dbContext.CourseSession.Include(cs => cs.Resources).FirstOrDefaultAsync(cs => cs.Id == IdCreator.ConcatenateId(id, number));
+            if (session == null) { return NotFound(); }
+            Resource resource = new()
+            {
+                Id = IdCreator.ConcatenateId(session.Id, session.Resources.Count),
+                Name = resourceDTO.Name,
+                FilePath = resourceDTO.FilePath,
+                Type = resourceDTO.Type,
+                CourseSession = session
+            };
+            return Created("New resource have been added",session);
+
+        }
+
+        [HttpGet]
+        [Route("full/all")]
+        public async Task<IActionResult> GetAllFullCourses()
+        {
+            var courses = await _dbContext.Course
+                .Include(c => c.Enrollments)
+                .Include(c => c.Sessions!).ThenInclude(cs => cs.Resources)
+                .ToListAsync();
+            if (!courses.Any()) { return NotFound(); }
+            return Ok(courses);
+        }
 
     }
 }

@@ -26,13 +26,10 @@ namespace ZealEducation.Models.Users
         [Required(ErrorMessage = "Date of birth is required")]
         public DateTime? DateOfBirth { get; set; }
 
-        [JsonIgnore]
         public ICollection<Attendance>? Attendances { get; set; }
 
-        [JsonIgnore]
         public ICollection<Submission>? Submissions { get; set; }
 
-        [JsonIgnore]
         public ICollection<Enrollment>? Enrollments { get; set; }
     }
 

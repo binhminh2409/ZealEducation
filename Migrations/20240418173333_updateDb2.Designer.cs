@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZealEducation.Models;
 
@@ -11,9 +12,10 @@ using ZealEducation.Models;
 namespace ZealEducation.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240418173333_updateDb2")]
+    partial class updateDb2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,24 +53,21 @@ namespace ZealEducation.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f987cfbd-bf91-4239-a07c-1aa7d236d4a3",
-
+                            Id = "eb1b370b-0576-486d-aaf1-a518507ebaf2",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "6cd095fe-c6bc-4bc7-b9b6-9c6d69782193",
-
+                            Id = "897e6981-e7a6-4add-bdd5-112f8b8d5b39",
                             ConcurrencyStamp = "2",
                             Name = "Faculty",
                             NormalizedName = "Faculty"
                         },
                         new
                         {
-                            Id = "1a0b4186-afc9-4517-93e5-610a6e98a483",
-
+                            Id = "7562364d-4896-48e6-a7fd-f769642a0f1d",
                             ConcurrencyStamp = "3",
                             Name = "Candidate",
                             NormalizedName = "Candidate"
@@ -425,7 +424,7 @@ namespace ZealEducation.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -752,11 +751,6 @@ namespace ZealEducation.Migrations
                 });
 
             modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
-                {
-                    b.Navigation("UserInfo");
-                });
-
-            modelBuilder.Entity("ZealEducation.Models.Users.UserInfo", b =>
                 {
                     b.Navigation("UserInfo");
                 });

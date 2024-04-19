@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using ZealEducation.Models.CandidateModule;
 
 namespace ZealEducation.Models.CourseModule
@@ -11,6 +12,8 @@ namespace ZealEducation.Models.CourseModule
 
         [Required(ErrorMessage = "Please assign a course name")]
         public string? Name { get; set; }
+
+        public string? ImageName { get; set; }
 
         [Required(ErrorMessage = "Please assign a course description")]
         public string? Description { get; set; }

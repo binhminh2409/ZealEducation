@@ -215,9 +215,10 @@ namespace ZealEducation.Controllers
         public async Task<IActionResult> AssignCandidate([FromRoute] string username, [FromRoute] string batchId)
         {
             // Check if user enrolled to the course
+
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == username);
-            var userInfo = await _dbContext.UserInfo.FirstOrDefaultAsync(ui => ui.User == user);
             if (user == null) { return NotFound("Candidate user doesn't exist"); }
+            var userInfo = await _dbContext.UserInfo.FirstOrDefaultAsync(ui => ui.User == user);
             // Get the list of all batch sessions
             var batch = await _dbContext.Batch
                 .Include(b => b.BatchSessions!).ThenInclude(bs => bs.Attendances!).ThenInclude(a => a.UserInfo)
