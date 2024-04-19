@@ -147,7 +147,6 @@ namespace ZealEducation.Controllers
 
         }
 
-
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginUser loginUser)

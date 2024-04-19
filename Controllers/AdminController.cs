@@ -60,7 +60,7 @@ namespace ZealEducation.Controllers
         {
             try
             {
-                var userInfo = _dbContext.UserInfo.ToList();
+                var userInfo = await _dbContext.UserInfo.ToListAsync();
 
                 return Ok(userInfo);
             }
@@ -70,5 +70,61 @@ namespace ZealEducation.Controllers
                 return StatusCode(500, "Failed to retrieve users");
             }
         }
+
+
+        [HttpGet("enrollment/all")]
+        public async Task<IActionResult> GetAllEnrollments ()
+        {
+            try
+            {
+                var enrollments = await _dbContext.Enrollment.ToListAsync();
+
+                return Ok(enrollments);
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors 
+                return StatusCode(500, "Failed to retreive enrollments");
+            }
+        }
+
+
+        [HttpGet("enrollment/find-by-all-course")]
+        public async Task<IActionResult> GetEnrollmentByAllCourse()
+        {
+            try
+            {
+                var courses = await _dbContext.Course.Include(c => c.Enrollments).ToListAsync();
+
+                return Ok(courses);
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors 
+                return StatusCode(500, "Failed to retreive enrollments");
+            }
+        }
+
+
+        [HttpGet("batch")]
+        public async Task<IActionResult> GetAllBatches()
+        {
+            try
+            {
+                var batches = await _dbContext.Batch
+                    .Include(b => b.Course)
+                    .Include(b => b.Exams)
+                    .ToListAsync();
+
+                return Ok(batches);
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors 
+                return StatusCode(500, "Failed to retreive batches");
+            }
+        }
+
+
     }
 }

@@ -12,7 +12,7 @@ namespace ZealEducation.Models.BatchModule
         [Required(ErrorMessage = "Please assign a session id"), JsonIgnore]
         public BatchSession? BatchSession { get; set; }
 
-        [Required(ErrorMessage = "Please assign an user id")]
+        [Required(ErrorMessage = "Please assign an user id"), JsonIgnore]
         public UserInfo? UserInfo { get; set; }
 
         [Required(ErrorMessage = "Please assign a status")]

@@ -20,6 +20,8 @@ namespace ZealEducation.Models
 
         public DbSet<Exam> Exams { get; set; }
 
+        public DbSet<Submission> Submission { get; set; }
+
         public DbSet<Batch> Batch { get; set; }
 
         public DbSet<BatchSession> BatchSession { get; set; }

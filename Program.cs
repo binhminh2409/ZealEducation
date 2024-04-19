@@ -6,6 +6,7 @@ using System.Text;
 using ZealEducation.Models;
 using Microsoft.OpenApi.Models;
 using ZealEducation.Models.Users;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,8 +75,13 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
-var app = builder.Build();
+//Add service cors
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+{
+    builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
+}));
 
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -83,7 +89,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseStaticFiles(new StaticFileOptions
+ {
+    FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Files", "CourseImages")),
+    RequestPath = "/api/course/images"
+ });
+
 app.UseHttpsRedirection();
+
+//app cors
+app.UseRouting();
+app.UseCors("corsapp");
 
 app.UseAuthentication();
 app.UseAuthorization();

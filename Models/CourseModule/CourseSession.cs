@@ -7,8 +7,7 @@ namespace ZealEducation.Models.CourseModule
     {
         public string Id { get; set; }
 
-        [JsonIgnore]
-        [Required(ErrorMessage = "Please assign a course id")]
+        [Required(ErrorMessage = "Please assign a course id"), JsonIgnore]
         public Course? Course { get; set; }
 
         [Required(ErrorMessage = "Please assign a course session name")]

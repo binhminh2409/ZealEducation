@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZealEducation.Models;
 
@@ -11,9 +12,10 @@ using ZealEducation.Models;
 namespace ZealEducation.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240413095136_updateEnrollmentDB")]
+    partial class updateEnrollmentDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,21 +53,21 @@ namespace ZealEducation.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "f987cfbd-bf91-4239-a07c-1aa7d236d4a3",
+                            Id = "6ad20553-e758-4d58-b29c-f519b1c75805",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "6cd095fe-c6bc-4bc7-b9b6-9c6d69782193",
+                            Id = "69bf3197-49ae-4f46-b8b6-91a622953d7f",
                             ConcurrencyStamp = "2",
                             Name = "Faculty",
                             NormalizedName = "Faculty"
                         },
                         new
                         {
-                            Id = "1a0b4186-afc9-4517-93e5-610a6e98a483",
+                            Id = "ab0b21f4-bf3e-4e08-9bba-1589208b9673",
                             ConcurrencyStamp = "3",
                             Name = "Candidate",
                             NormalizedName = "Candidate"
@@ -306,9 +308,6 @@ namespace ZealEducation.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -391,16 +390,9 @@ namespace ZealEducation.Migrations
                         .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FilePath")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ScoreToPass")
-                        .IsRequired()
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("StartDate")
                         .IsRequired()
@@ -413,31 +405,46 @@ namespace ZealEducation.Migrations
                     b.ToTable("Exams");
                 });
 
+            modelBuilder.Entity("ZealEducation.Models.ExamModule.Result", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool?>("Passed")
+                        .IsRequired()
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Score")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubmissionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubmissionId");
+
+                    b.ToTable("Result");
+                });
+
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Submission", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime?>("DateTime")
+                        .IsRequired()
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ExamId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("FileName")
+                    b.Property<string>("FilePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("MarkedDateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool?>("Passed")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("Score")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("SubmitDateTime")
-                        .IsRequired()
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserInfoId")
                         .IsRequired()
@@ -689,6 +696,17 @@ namespace ZealEducation.Migrations
                     b.Navigation("Batch");
                 });
 
+            modelBuilder.Entity("ZealEducation.Models.ExamModule.Result", b =>
+                {
+                    b.HasOne("ZealEducation.Models.ExamModule.Submission", "Submission")
+                        .WithMany("Results")
+                        .HasForeignKey("SubmissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Submission");
+                });
+
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Submission", b =>
                 {
                     b.HasOne("ZealEducation.Models.ExamModule.Exam", "Exam")
@@ -746,6 +764,11 @@ namespace ZealEducation.Migrations
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Exam", b =>
                 {
                     b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("ZealEducation.Models.ExamModule.Submission", b =>
+                {
+                    b.Navigation("Results");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
