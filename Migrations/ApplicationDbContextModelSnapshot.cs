@@ -52,7 +52,6 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "f987cfbd-bf91-4239-a07c-1aa7d236d4a3",
-
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
@@ -60,7 +59,6 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "6cd095fe-c6bc-4bc7-b9b6-9c6d69782193",
-
                             ConcurrencyStamp = "2",
                             Name = "Faculty",
                             NormalizedName = "Faculty"
@@ -68,7 +66,6 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "1a0b4186-afc9-4517-93e5-610a6e98a483",
-
                             ConcurrencyStamp = "3",
                             Name = "Candidate",
                             NormalizedName = "Candidate"
@@ -208,7 +205,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Attendance");
+                    b.ToTable("Attendance", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.BatchModule.Batch", b =>
@@ -240,7 +237,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Batch");
+                    b.ToTable("Batch", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.BatchModule.BatchSession", b =>
@@ -260,7 +257,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("BatchId");
 
-                    b.ToTable("BatchSession");
+                    b.ToTable("BatchSession", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CandidateModule.Enrollment", b =>
@@ -297,7 +294,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Enrollment");
+                    b.ToTable("Enrollment", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.Course", b =>
@@ -326,7 +323,7 @@ namespace ZealEducation.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Course");
+                    b.ToTable("Course", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.CourseSession", b =>
@@ -350,7 +347,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("CourseSession");
+                    b.ToTable("CourseSession", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.Resource", b =>
@@ -378,7 +375,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseSessionId");
 
-                    b.ToTable("Resource");
+                    b.ToTable("Resource", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Exam", b =>
@@ -413,7 +410,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("BatchId");
 
-                    b.ToTable("Exams");
+                    b.ToTable("Exams", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.ExamModule.Submission", b =>
@@ -452,7 +449,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Submission");
+                    b.ToTable("Submission", (string)null);
                 });
 
             modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
@@ -545,7 +542,7 @@ namespace ZealEducation.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserInfo");
+                    b.ToTable("UserInfo", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -752,11 +749,6 @@ namespace ZealEducation.Migrations
                 });
 
             modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
-                {
-                    b.Navigation("UserInfo");
-                });
-
-            modelBuilder.Entity("ZealEducation.Models.Users.UserInfo", b =>
                 {
                     b.Navigation("UserInfo");
                 });
