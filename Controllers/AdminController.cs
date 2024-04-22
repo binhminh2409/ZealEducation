@@ -177,5 +177,6 @@ namespace ZealEducation.Controllers
                 return StatusCode(500, "Failed to retreive course enquiries");
             }
         }
+
     }
 }
