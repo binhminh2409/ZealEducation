@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using ZealEducation.Model.Authentication.Signup;
 using ZealEducation.Models;
+using ZealEducation.Models.BatchModule;
 using ZealEducation.Models.CandidateModule;
+using ZealEducation.Models.Users;
 using ZealEducation.Utils;
 
 namespace ZealEducation.Controllers
@@ -15,10 +19,75 @@ namespace ZealEducation.Controllers
     {
         private readonly ApplicationDbContext _dbContext;
 
-        public CandidateController(ApplicationDbContext dbContext)
+        private readonly UserManager<User> _userManager;
+
+        public CandidateController(ApplicationDbContext dbContext, UserManager<User> userManager)
         {
             _dbContext = dbContext;
+            _userManager = userManager;
+        }
 
+        [HttpGet("user-info")]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            try
+            {
+                // Find user info: 
+                var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (userIdClaim == null) { return Unauthorized(); }
+                var userInfo = await _dbContext.UserInfo
+                    .Include(u => u.Enrollments)
+                    .Include(u => u.Attendances)
+                    .Include(u => u.Submissions)
+                    .FirstOrDefaultAsync(u => u.Id == userIdClaim.Value);
+                return Ok(userInfo);
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors 
+                return StatusCode(500, "Failed to retrieve user info");
+            }
+        }
+
+        [HttpPut("update/user-info")]
+        public async Task<IActionResult> UpdateUserInfo([FromBody] UserInfoDTO userInfoDTO)
+        {
+            try
+            {
+                // Find user info: 
+                var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (userIdClaim == null) { return Unauthorized(); }
+                var userInfo = await _dbContext.UserInfo
+                    .Include(u => u.Enrollments)
+                    .Include(u => u.Attendances)
+                    .Include(u => u.Submissions)
+                    .FirstOrDefaultAsync(u => u.Id == userIdClaim.Value);
+                var user = await _userManager.FindByIdAsync(userIdClaim.Value);
+                // Check if email existed
+                var userExistByEmail = await _userManager.FindByEmailAsync(userInfoDTO.Email);
+                if (userExistByEmail != null)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden,
+                        new Response { Status = "Error", Message = "Email already exists!" });
+                }
+
+                userInfo.Email = userInfoDTO.Email;
+                userInfo.FirstName = userInfoDTO.FirstName;
+                userInfo.LastName = userInfoDTO.LastName;
+                userInfo.PhoneNumber = userInfoDTO.PhoneNumber;
+                userInfo.DateOfBirth = userInfoDTO.DateOfBirth;
+                user.Email = userInfoDTO.Email;
+
+                await _userManager.UpdateAsync(user);
+                _dbContext.Update(userInfo);
+                await _dbContext.SaveChangesAsync();
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors 
+                return StatusCode(500, "Failed to retrieve user info");
+            }
         }
 
         [HttpPost]
@@ -76,13 +145,16 @@ namespace ZealEducation.Controllers
             if (userIdClaim == null) { return Unauthorized(); }
             var userInfo = await _dbContext.UserInfo.FindAsync(userIdClaim.Value);
 
-            // Find all attendances
             var batches = await _dbContext.Batch
-                .Include(b => b.Exams!).ThenInclude(e => e.Submissions!).ThenInclude(sub => sub.UserInfo).Where(b => b.Exams!.Any(e => e.Submissions!.Any(sub => sub.UserInfo == userInfo)))
                 .Include(b => b.Course)
-                .Include(b => b.BatchSessions!).ThenInclude(bs => bs.Attendances).Where(b => b.BatchSessions!.Any(bs => bs.Attendances!.Any(a => a.UserInfo == userInfo)))
+                .Include(b => b.BatchSessions!).ThenInclude(bs => bs.Attendances!).ThenInclude((Attendance a) => a.UserInfo).Where(b => b.BatchSessions!.Any(bs => bs.Attendances!.Any(a => a.UserInfo == userInfo)))
+                .Include(b => b.Exams)
                 .ToListAsync();
-            if (batches == null) { return NotFound(); }
+            if (batches == null)
+            {
+                return NotFound();
+            }
+
 
             return Ok(batches);
         }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ZealEducation.Models;
 
@@ -11,9 +12,10 @@ using ZealEducation.Models;
 namespace ZealEducation.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240421080756_newenquiry")]
+    partial class newenquiry
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,7 +61,6 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "fd668acc-8460-40c2-9700-e000336545ce",
-
                             ConcurrencyStamp = "2",
                             Name = "Faculty",
                             NormalizedName = "Faculty"
@@ -67,7 +68,6 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "186a251d-b050-47db-b673-9166d3b2e6d6",
-
                             ConcurrencyStamp = "3",
                             Name = "Candidate",
                             NormalizedName = "Candidate"
@@ -207,7 +207,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Attendance", (string)null);
+                    b.ToTable("Attendance");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.BatchModule.Batch", b =>
@@ -239,7 +239,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Batch", (string)null);
+                    b.ToTable("Batch");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.BatchModule.BatchSession", b =>
@@ -259,7 +259,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("BatchId");
 
-                    b.ToTable("BatchSession", (string)null);
+                    b.ToTable("BatchSession");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CandidateModule.Enrollment", b =>
@@ -296,7 +296,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Enrollment", (string)null);
+                    b.ToTable("Enrollment");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.Course", b =>
@@ -325,7 +325,7 @@ namespace ZealEducation.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Course", (string)null);
+                    b.ToTable("Course");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.CourseSession", b =>
@@ -349,7 +349,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("CourseSession", (string)null);
+                    b.ToTable("CourseSession");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.CourseModule.Resource", b =>
@@ -377,7 +377,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("CourseSessionId");
 
-                    b.ToTable("Resource", (string)null);
+                    b.ToTable("Resource");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.EnquiryModule.BatchEnquiry", b =>
@@ -421,7 +421,6 @@ namespace ZealEducation.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -486,16 +485,17 @@ namespace ZealEducation.Migrations
                         .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("Id");
 
                     b.HasIndex("BatchId");
 
                     b.ToTable("Exams");
                 });
-                    b.Property<int?>("Score")
-                        .HasColumnType("int");
+
+            modelBuilder.Entity("ZealEducation.Models.ExamModule.Submission", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ExamId")
                         .IsRequired()
@@ -528,7 +528,7 @@ namespace ZealEducation.Migrations
 
                     b.HasIndex("UserInfoId");
 
-                    b.ToTable("Submission", (string)null);
+                    b.ToTable("Submission");
                 });
 
             modelBuilder.Entity("ZealEducation.Models.Users.User", b =>
@@ -621,7 +621,7 @@ namespace ZealEducation.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserInfo", (string)null);
+                    b.ToTable("UserInfo");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

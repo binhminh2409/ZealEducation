@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ZealEducation.Models.Users;
 using Microsoft.EntityFrameworkCore;
+using ZealEducation.Models.EnquiryModule;
 
 namespace ZealEducation.Controllers
 {
@@ -83,7 +84,15 @@ namespace ZealEducation.Controllers
                 DateOfBirth = registerUser.DateOfBirth,
             };
 
+            //Create enquiry
+            UserEnquiry userEnquiry = new()
+            {
+                UserInfoId = user.Id,
+                Description = "New candidate user created"
+            };
+
             await _dbContext.UserInfo.AddAsync(userInfo);
+            await _dbContext.UserEnquiry.AddAsync(userEnquiry);
             await _dbContext.SaveChangesAsync();
 
             return StatusCode(StatusCodes.Status201Created,
@@ -137,6 +146,14 @@ namespace ZealEducation.Controllers
                 LastName = registerUser.LastName,
                 PhoneNumber = registerUser.PhoneNumber,
                 DateOfBirth = registerUser.DateOfBirth,
+            };
+
+
+            //Create enquiry
+            UserEnquiry userEnquiry = new()
+            {
+                UserInfoId = user.Id,
+                Description = "New faculty user created"
             };
 
             _dbContext.UserInfo.Add(userInfo);

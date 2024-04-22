@@ -112,6 +112,7 @@ namespace ZealEducation.Controllers
             try
             {
                 var batches = await _dbContext.Batch
+                    .Include(b => b.BatchSessions!).ThenInclude(bs => bs.Attendances)
                     .Include(b => b.Course)
                     .Include(b => b.Exams)
                     .ToListAsync();
@@ -125,6 +126,57 @@ namespace ZealEducation.Controllers
             }
         }
 
+        [HttpGet("batch-enquiry")]
+        public async Task<IActionResult> GetAllBatchEnquiries()
+        {
+            try
+            {
+                var batchEnqiries = await _dbContext.BatchEnquiry
+                    .ToListAsync();
+
+                return Ok(batchEnqiries);
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors 
+                return StatusCode(500, "Failed to retreive batche enquiries");
+            }
+        }
+
+
+        [HttpGet("user-enquiry")]
+        public async Task<IActionResult> GetAllUserEnquiries()
+        {
+            try
+            {
+                var userEnqiries = await _dbContext.UserEnquiry
+                    .ToListAsync();
+
+                return Ok(userEnqiries);
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors 
+                return StatusCode(500, "Failed to retreive user enquiries");
+            }
+        }
+
+        [HttpGet("course-enquiry")]
+        public async Task<IActionResult> GetAllCourseEnquiries()
+        {
+            try
+            {
+                var courseEnquiries = await _dbContext.CourseEnquiry
+                    .ToListAsync();
+
+                return Ok(courseEnquiries);
+            }
+            catch (Exception ex)
+            {
+                // Handle any errors 
+                return StatusCode(500, "Failed to retreive course enquiries");
+            }
+        }
 
     }
 }

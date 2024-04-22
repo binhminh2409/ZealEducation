@@ -7,8 +7,10 @@ using System.Security.Claims;
 using ZealEducation.Models;
 using ZealEducation.Models.BatchModule;
 using ZealEducation.Models.CourseModule;
+using ZealEducation.Models.EnquiryModule;
 using ZealEducation.Models.Users;
 using ZealEducation.Utils;
+using static ZealEducation.Models.Users.UserList;
 
 namespace ZealEducation.Controllers
 {
@@ -68,6 +70,7 @@ namespace ZealEducation.Controllers
             var batches = await _dbContext.Batch
                 .Include(b => b.Course)
                 .Include(b => b.BatchSessions!).ThenInclude(bs => bs.Attendances!).ThenInclude((Attendance a) => a.UserInfo)
+                .Include(b => b.Exams)
                 .ToListAsync();
             if (batches == null) {
                 return NotFound();
@@ -86,7 +89,7 @@ namespace ZealEducation.Controllers
             batch = await _dbContext.Batch
                     .Include(b => b.Course)
                     .Include(b => b.BatchSessions!).ThenInclude(bs => bs.Attendances!).ThenInclude(a => a.UserInfo)
-                    .Include(bs => bs.Exams)
+                    .Include(b => b.Exams)
                     .FirstOrDefaultAsync(b => b.Id == id);
             
             if (batch == null)
@@ -160,7 +163,17 @@ namespace ZealEducation.Controllers
             _dbContext.Add(batch);
             _dbContext.AddRange(batchSessions);
 
-           _dbContext.SaveChanges();
+
+            //Create enquiry
+            BatchEnquiry batchEnquiry = new()
+            {
+                BatchId = batch.Id,
+                Description = "New batch created",
+                CreatedDate = DateTime.Now,
+            };
+            _dbContext.Add(batchEnquiry);
+
+            _dbContext.SaveChanges();
 
             return Created("Batch created successfuly", batch);
         }
@@ -177,7 +190,17 @@ namespace ZealEducation.Controllers
                 return NotFound();
             }
 
+            //Create enquiry
+            BatchEnquiry batchEnquiry = new()
+            {
+                BatchId = batch.Id,
+                Description = "Batch removed",
+                CreatedDate = DateTime.Now,
+            };
+            _dbContext.Add(batchEnquiry);
+
             _dbContext.Remove(batch);
+
             _dbContext.SaveChanges();
             return Ok(batch);
         }
@@ -205,6 +228,16 @@ namespace ZealEducation.Controllers
 
 
             _dbContext.Batch.Update(batch);
+
+            //Create enquiry
+            BatchEnquiry batchEnquiry = new()
+            {
+                BatchId = batch.Id,
+                Description = "Batch updated",
+                CreatedDate = DateTime.Now,
+            };
+            _dbContext.Add(batchEnquiry);
+
             await _dbContext.SaveChangesAsync();
 
             return Ok(batch);
