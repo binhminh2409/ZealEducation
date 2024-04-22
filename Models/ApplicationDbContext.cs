@@ -5,6 +5,7 @@ using System.Reflection.Emit;
 using ZealEducation.Models.BatchModule;
 using ZealEducation.Models.CandidateModule;
 using ZealEducation.Models.CourseModule;
+using ZealEducation.Models.EnquiryModule;
 using ZealEducation.Models.ExamModule;
 using ZealEducation.Models.Users;
 
@@ -37,6 +38,11 @@ namespace ZealEducation.Models
 
         public DbSet<Enrollment> Enrollment { get; set; }
 
+        public DbSet<UserEnquiry> UserEnquiry { get; set; }
+
+        public DbSet<CourseEnquiry> CourseEnquiry { get; set; }
+
+        public DbSet<BatchEnquiry> BatchEnquiry { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
