@@ -33,44 +33,42 @@ namespace ZealEducation.Controllers
             var courses = await _dbContext.Course
                 .Include(c => c.Sessions)
                 .ToListAsync();
-
             if (courses == null)
             {
                 return NotFound();
             }
-
             return Ok(courses);
         }
 
         [HttpGet]
         [Route("find/{id}")]
-        public async Task<IActionResult> GetCourse([FromRoute] string id,
-            [FromQuery] bool returnSessions)
+        public async Task<IActionResult> GetCourse([FromRoute] string id)
         {
-            //load all Courses with Sessions descriptions
-            var course = new Course();
-
-            if (returnSessions)
-            {
-                // Load the course with sessions and resources
-                course = await _dbContext.Course
-                    .Include(c => c.Sessions)
-                    .FirstOrDefaultAsync(c => c.Id == id);
-
-            } else
-            {
-                course = await _dbContext.Course
+            // Load the course with its sessions
+            var course = await _dbContext.Course
                 .Include(c => c.Sessions)
                 .FirstOrDefaultAsync(c => c.Id == id);
-            }
 
             if (course == null)
             {
                 return NotFound();
             }
 
+            // Check if the course has any sessions
+            if (course.Sessions != null && course.Sessions.Any())
+            {
+                // Load the resources for the first session
+                var firstSession = await _dbContext.CourseSession
+                    .Include(cs => cs.Resources)
+                    .FirstOrDefaultAsync(cs => cs.Id == course.Sessions.First().Id);
+
+                // Replace the first session in the course with the one including resources
+                course.Sessions.First().Resources = firstSession?.Resources;
+            }
+
             return Ok(course);
         }
+
 
 
         [HttpGet]
@@ -136,11 +134,12 @@ namespace ZealEducation.Controllers
                     for (int j = 0; j < newRessourceDtoList.Count; j++)
                     {
                         var resourceDto = newRessourceDtoList[j];
+                        if (resourceDto.Type == "Ebook") { resourceDto.FilePath = null; }
                         resources.Add(new Resource
                         {
                             Id = IdCreator.ConcatenateId(session.Id, j+1),
                             Name = resourceDto.Name,
-                            FilePath = resourceDto.FilePath,
+                            FileName = resourceDto.FilePath,
                             Type = resourceDto.Type,
                             CourseSession = session // Assign the session to the resource
                         });
@@ -200,7 +199,7 @@ namespace ZealEducation.Controllers
             return Ok($"Course with Id {id} updated successfully"); 
         }
 
-        [HttpPut("update/{id}/image")]
+        [HttpPut("update/image/{id}")]
         public async Task<IActionResult> UpdateCourseImage(IFormFile imageFile, [FromRoute] string id)
         {
 
@@ -234,9 +233,43 @@ namespace ZealEducation.Controllers
                 await imageFile.CopyToAsync(stream);
             }
             course.ImageName = imageName;
-
+            Console.WriteLine(imageFile);
             await _dbContext.SaveChangesAsync();
             return Ok($"Course with Id {id} updated successfully");
+        }
+
+
+        [HttpPut("resource/update/{id}")]
+        public async Task<IActionResult> UpdateResourcePath(IFormFile file, [FromRoute] string id)
+        {
+
+            // Check file validity
+            if (file == null || file.Length <= 0) { return BadRequest("No file submitted"); }
+
+            // Create unique file name 
+            string fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+            var resource = await _dbContext.Resource.FindAsync(id);
+            if (resource == null)
+            {
+                return NotFound();
+            }
+
+            // Store file in the server
+            var folderPath = Path.Combine(_env.ContentRootPath, "Files", "Resources");
+            Directory.CreateDirectory(folderPath); // Create the folder if it doesn't exist
+            var fileName = resource.Id + fileExtension;
+            var filePath = Path.Combine(folderPath, fileName);
+
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            resource.FileName = fileName;
+
+            await _dbContext.SaveChangesAsync();
+            return Ok($"Resource with Id {id} updated successfully");
         }
 
         [HttpPost]
@@ -249,7 +282,7 @@ namespace ZealEducation.Controllers
             {
                 Id = IdCreator.ConcatenateId(session.Id, session.Resources.Count),
                 Name = resourceDTO.Name,
-                FilePath = resourceDTO.FilePath,
+                FileName = resourceDTO.FilePath,
                 Type = resourceDTO.Type,
                 CourseSession = session
             };

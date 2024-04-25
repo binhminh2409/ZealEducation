@@ -51,14 +51,14 @@ namespace ZealEducation.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "a3890fde-a1cf-46d8-8698-1664f315adc1",
+                            Id = "ac433250-2632-4c0d-a065-99f5d8913aaa",
                             ConcurrencyStamp = "1",
                             Name = "Admin",
                             NormalizedName = "Admin"
                         },
                         new
                         {
-                            Id = "fd668acc-8460-40c2-9700-e000336545ce",
+                              Id = "fd668acc-8460-40c2-9700-e000336545ce",
 
                             ConcurrencyStamp = "2",
                             Name = "Faculty",
@@ -67,7 +67,6 @@ namespace ZealEducation.Migrations
                         new
                         {
                             Id = "186a251d-b050-47db-b673-9166d3b2e6d6",
-
                             ConcurrencyStamp = "3",
                             Name = "Candidate",
                             NormalizedName = "Candidate"
@@ -361,8 +360,7 @@ namespace ZealEducation.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("FilePath")
-                        .IsRequired()
+                    b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")

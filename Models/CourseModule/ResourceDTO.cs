@@ -7,7 +7,6 @@ namespace ZealEducation.Models.CourseModule
         [Required(ErrorMessage = "Please assign a resource name")]
         public string? Name { get; set; }
 
-        [Required(ErrorMessage = "Please assign a resource file")]
         public string? FilePath { get; set; }
 
         [Required(ErrorMessage = "Please assign a resource type")]

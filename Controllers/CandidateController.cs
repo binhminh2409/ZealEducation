@@ -138,6 +138,20 @@ namespace ZealEducation.Controllers
         }
 
         [HttpGet]
+        [Route("find/course/all")]
+        public async Task<IActionResult> GetAllCourses()
+        {
+            var userIdClaim = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (userIdClaim == null) { return Unauthorized(); }
+            var userInfo = await _dbContext.UserInfo.FindAsync(userIdClaim.Value);
+
+            var courses = await _dbContext.Course
+                .Where(c => c.Enrollments.Any(e => e.UserInfo == userInfo))
+                .ToListAsync();
+            return Ok(courses);
+        }
+
+        [HttpGet]
         [Route("find/batch/all")]
         public async Task<IActionResult> GetAllBatches()
         {

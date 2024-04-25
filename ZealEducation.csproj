@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Files\Resources\" />
     <Folder Include="Migrations\" />
     <Folder Include="Submissions\" />
 
