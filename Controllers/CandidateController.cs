@@ -90,7 +90,6 @@ namespace ZealEducation.Controllers
             }
         }
 
-
         [HttpPost]
         [Route("create/enrollment")]
         public async Task<IActionResult> CreateEnrollment([FromBody] EnrollmentDTO enrollmentDTO)
@@ -169,6 +168,7 @@ namespace ZealEducation.Controllers
             {
                 return NotFound();
             }
+
 
             return Ok(batches);
         }
