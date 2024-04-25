@@ -75,11 +75,17 @@ builder.Services.AddSwaggerGen(option =>
     });
 });
 
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 100_000_000; // Set your desired limit in bytes (here, 100 MB)
+});
+
 //Add service cors
 builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
     builder.WithOrigins("http://localhost:3000").AllowAnyMethod().AllowAnyHeader();
 }));
+
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -95,6 +101,14 @@ app.UseStaticFiles(new StaticFileOptions
     FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Files", "CourseImages")),
     RequestPath = "/api/course/images"
  });
+
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.ContentRootPath, "Files", "Resources")),
+    RequestPath = "/api/course/resources"
+});
+
 
 app.UseHttpsRedirection();
 
