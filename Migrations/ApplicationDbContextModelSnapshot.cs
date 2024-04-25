@@ -59,6 +59,7 @@ namespace ZealEducation.Migrations
                         new
                         {
                               Id = "fd668acc-8460-40c2-9700-e000336545ce",
+
                             ConcurrencyStamp = "2",
                             Name = "Faculty",
                             NormalizedName = "Faculty"
